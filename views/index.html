@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pixelmanipulation SpriteSheet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!--import auto css -->
+    <link
+      href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <!--import socket -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js"></script>
+  </head>
+  <body class="bg-blue-600">
+    <!-- DEBUT INTRO -->
+    <div
+      class="container h-screen m-auto flex flex-col justify-center items-center"
+      id="intro"
+    >
+      <h1 class="text-4xl text-yellow-400">
+        Quizz par <span class="text-orange-500">Clément</span> !
+      </h1>
+      <form
+        id="form_pseudo"
+        class="bg-blue-600 w-1/2 rounded p-6 shadow-md mt-4 border-4 border-yellow-300"
+      >
+        <h2 class="text-xl text-orange-500 font-bold mb-4">
+          Entrez votre pseudo :
+        </h2>
+        <input
+          id="name"
+          class="d-block rounded w-full border-4 border-yellow-300 shadow p-4 text-black"
+          type="text"
+          placeholder="Mets ton pseudo..."
+        />
+      </form>
+    </div>
+    <!-- FIN INTRO -->
+    <!-- DEBUT JEU -->
+    <div class="hidden" id="game">
+      <!-- Buzzer et ecrire -->
+      <div
+        class="fixed w-1/2 inset-y-0 left-0 justify-center items-center hidden"
+        id="buzzer"
+      >
+        <div class="flex items-stretch">
+          <input
+            id="Buzzer_1"
+            class="Buzzer_1"
+            type="image"
+            value="pseudonyme"
+            onclick="Buzzer_Ecrire_1()"
+            src="https://cdn.glitch.global/5a1d0a3f-739f-476e-a5af-3efd7b0fa731/disbutton.png?v=1663761468034"
+          />
+          <input
+            id="Buzzer_2"
+            class="Buzzer_2"
+            type="image"
+            value="pseudonyme"
+            onclick="Buzzer_Ecrire_2()"
+            src="https://cdn.glitch.global/5a1d0a3f-739f-476e-a5af-3efd7b0fa731/disbutton.png?v=1663761468034"
+          />
+        </div>
+        <div class="flex items-stretch">
+          <input
+            id="Buzzer_3"
+            class="Buzzer_3"
+            type="image"
+            value="pseudonyme"
+            onclick="Buzzer_Ecrire_3()"
+            src="https://cdn.glitch.global/5a1d0a3f-739f-476e-a5af-3efd7b0fa731/disbutton.png?v=1663761468034"
+          />
+          <input
+            id="Buzzer_4"
+            class="Buzzer_4"
+            type="image"
+            value="pseudonyme"
+            onclick="Buzzer_Ecrire_4()"
+            src="https://cdn.glitch.global/5a1d0a3f-739f-476e-a5af-3efd7b0fa731/disbutton.png?v=1663761468034"
+          />
+        </div>
+        <div class="flex items-stretch">
+          <input
+            id="Buzzer_5"
+            class="Buzzer_5"
+            type="image"
+            value="pseudonyme"
+            onclick="Buzzer_Ecrire_5()"
+            src="https://cdn.glitch.global/5a1d0a3f-739f-476e-a5af-3efd7b0fa731/disbutton.png?v=1663761468034"
+          />
+          <input
+            id="Buzzer_6"
+            class="Buzzer_6"
+            type="image"
+            value="pseudonyme"
+            onclick="Buzzer_Ecrire_6()"
+            src="https://cdn.glitch.global/5a1d0a3f-739f-476e-a5af-3efd7b0fa731/disbutton.png?v=1663761468034"
+          />
+        </div>
+        <form
+          id="form_jeu"
+          class="bg-blue-600 w-1/2 rounded p-6 shadow-md mt-4 border-4 border-yellow-300 hidden"
+        >
+          <input
+            id="reponse_pixel"
+            class="d-block rounded w-full border-4 border-yellow-300 shadow p-4 text-black"
+            type="text"
+            placeholder="Ecris ta réponse..."
+          />
+        </form>
+      </div>
+      <!-- FIN Buzzer et ecrire -->
+
+      <div
+        class="fixed w-1/2 h-full space-y-5 inset-y-0 right-0 justify-center items-center"
+        id="game_pixel"
+      >
+        <!-- TITRE JEU -->
+        <h1 id="titre_jeu" class="text-4xl border-yellow-300 text-white">
+          Pixel Guess Spécial <span class="text-orange-500">Lol</span> !
+        </h1>
+        <!-- TIMER -->
+        <input
+          type="button"
+          class="bg-blue-600 rounded-full w-16 h-16 text-3xl border-2 border-orange-500"
+          id="timer"
+          value="18"
+        />
+        <!-- REPONSE -->
+        <h1 id="reponse_ancien_guess" class="hidden text-4xl text-white"></h1>
+        <!-- DEBUT PIXEL GUESS -->
+        <div
+          class="bg-blue-600 rounded shadow-md border-4 border-yellow-300"
+          style="height: 290px; width: 260px"
+        >
+          <canvas class="image_a_deviner" width="250" height="282" id="canvas">
+            Your browser does not support the HTML 5 Canvas.
+          </canvas>
+        </div>
+        <!-- FIN PIXEL GUESS -->
+
+        <!-- DEBUT Classement -->
+        <div
+          class="bg-blue-600 fixed w-1/2 h-2/4 rounded shadow-md border-4 border-yellow-300 text-center text-white"
+        >
+          <h3 class="text-2xl font-bold border-b border-yellow-300 pb-4 mb-4">
+            <span class="text-red-400">CLASSEMENT</span>
+          </h3>
+          <ul id="leaderboard"></ul>
+        </div>
+        <!-- FIN Classement -->
+      </div>
+
+      <!-- BOUTTON DEMARRER -->
+      <div class="themes fixed bottom-0 right-0">
+        <input
+          id="animate"
+          class="bg-blue-600 text-white d-block rounded w-auto border-4 border-yellow-300 shadow p-4 mt-5"
+          onclick="Lancer_Guess()"
+          type="button"
+          value="Animate"
+        />
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript" src="script.js"></script>
+</html>
